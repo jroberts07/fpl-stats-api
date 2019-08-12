@@ -1,8 +1,0 @@
-action: lint, msg: getenv
-cwd: /usr/src/app/.tox
-cmd: /usr/local/bin/python -m virtualenv --system-site-packages --no-download --python /usr/local/bin/python lint
-Already using interpreter /usr/local/bin/python
-Using base prefix '/usr/local'
-New python executable in /usr/src/app/.tox/lint/bin/python
-Installing setuptools, pip, wheel...
-done.
