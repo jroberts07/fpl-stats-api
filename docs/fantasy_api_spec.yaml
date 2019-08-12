@@ -1,0 +1,105 @@
+openapi: '3.0.0'
+info:
+  title: FPL Stats API Specification
+  description: <ap>This document provides a guide for consuming endpoints on the FPL Stats API. The purpose of this service is to return stats from the FPL API. All requests must contain a player_id in the query params as this is what the FPL API uses to authenticate requests. This can be found by logging into <a href='https://www.premierleague.com/'>FPL</a> and obtaining the value of the cookie named pl_profile (without the speech marks).<p>The API has an HTTP/RestFul-based interface using elements of Representation State Transfer (REST) methodology. This interface uses commands and parameters embedded in HTTP URL requests and responds with data in a JavaScript Object Notation (JSON) format.</p>
+  contact:
+    name: FPL Stats API Support
+    email: j.roberts07@outlook.com
+  version: 1.0.0
+servers:
+  - url: http://stats-api.fplstats.com
+paths:
+  /entry_data/{entry_id}:
+    get:
+      tags:
+        - Entry Data
+      summary: The entry name and the leagues entered.
+      description:
+        Returns the leagues that the player with the requested user entry has entered and their name.
+      parameters:
+        - $ref: '#/components/parameters/entry_id'
+        - $ref: '#/components/parameters/player_id'
+      responses:
+        '200':
+          description: The leagues the entry has entered and their name.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/entry_data_success_response'
+        '400':
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bad_request_error_response'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_error_response'
+
+components:
+  parameters:
+    entry_id:
+      name: entry_id
+      in: path
+      description: The players entry id.
+      required: true
+      schema:
+        type: number
+        example: 1476876
+    player_id:
+      name: player_id
+      in: query
+      description: The cookie provided to the player by the FPL website.
+      required: true
+      schema:
+        type: string
+        example: "eyjdjd455TYHdbnmdJFyy7667HSHMNCII9idknfn&jYn=="
+
+  schemas:
+    entry_data_success_response:
+      type: object
+      required:
+        - name
+        - leagues
+      properties:
+        name:
+          type: string
+          description: The name of the entry.
+          example: "Team A"
+        leagues:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - name
+            properties:
+              id:
+                type: number
+                description: The id of the league.
+                example: 1234
+              name:
+                type: string
+                description: The name of the leagie
+                example: "My Fantasy League"
+
+    bad_request_error_response:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          example: "PARAMETERS REQUIRED: player_id"
+
+    internal_error_response:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          example: "FPL CONNECTION ERROR"

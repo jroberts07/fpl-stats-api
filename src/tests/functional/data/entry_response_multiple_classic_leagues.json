@@ -1,0 +1,29 @@
+{
+  "name": "TEAM A",
+  "leagues":
+    {
+      "classic":[
+        {
+          "id":1,
+          "name":"LEAGUE A"
+        },
+        {
+          "id":2,
+          "name":"LEAGUE B"
+        },
+        {
+          "id":3,
+          "name":"LEAGUE C"
+        },
+        {
+          "id":4,
+          "name":"LEAGUE D"
+        },
+        {
+          "id":5,
+          "name":"LEAGUE E"
+        }
+      ],
+      "h2h":[]
+    }
+}

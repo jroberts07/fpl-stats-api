@@ -1,0 +1,12 @@
+{
+  "leagues":
+    {
+      "classic":[
+        {
+          "id":1,
+          "name":"LEAGUE A"
+        }
+      ],
+      "h2h":[]
+    }
+}

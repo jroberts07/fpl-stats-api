@@ -1,0 +1,32 @@
+version: '2'
+services:
+
+  fantasy_api:
+    build:
+      context: ../../fantasy_api/src
+      dockerfile: Dockerfile
+    image: fantasy_api
+    links:
+      - stats_database
+    ports:
+      - "30000:8000"
+    volumes:
+      - .:/usr/src/app
+
+  stats_database:
+    image: mongo:4.1.6
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=fantasy
+      - MONGO_INITDB_ROOT_PASSWORD=password
+
+  fantasy_api_test:
+    build:
+      context: ../../fantasy_api/src
+      dockerfile: Dockerfile.test
+    links:
+      - stats_database
+    volumes:
+      - .:/usr/src/app
