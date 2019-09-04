@@ -3,6 +3,7 @@ from http import HTTPStatus
 import motor.motor_asyncio
 from sanic import Sanic
 from sanic import response
+from sanic_cors import CORS, cross_origin
 from sanic.log import access_logger
 from sanic.log import logger
 import time
@@ -16,6 +17,7 @@ from utils.exceptions import (
 )
 
 app = Sanic(__name__)
+CORS(app)
 app.config.from_pyfile('/usr/src/app/config.py')
 
 
