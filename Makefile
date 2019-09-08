@@ -1,5 +1,6 @@
-NAME = fantasy_api
+NAME = fpl-stats-api
 COMPOSE_FILE = src/docker-compose.yml
+COMPOSE_PROJECT_NAME = fpl
 
 help:
 	@perl -ne 'print if /^[0-9a-zA-Z_-]+:.*?## .*$$/' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -11,19 +12,19 @@ build: env-compose ## Builds the docker image to run the app
 	@docker-compose build
 
 run: env-compose ## Runs the code in a container
-	@docker-compose up -d fantasy_api
+	@docker-compose up -d fpl-stats-api
 
 stop: env-compose ## Stop the services required for the dev environment.
 	@docker-compose stop
 
 test: env-compose ## Runs the unit tests
-	@docker-compose run --rm fantasy_api_test
+	@docker-compose run --rm fpl-stats-api-test
 
 logs: env-compose ## Logs
-	@docker-compose logs --tail=500 -f fantasy_api
+	@docker-compose logs --tail=500 -f fpl-stats-api
 
 shell: env-compose ## Shell into main container
-	@docker-compose exec fantasy_api sh
+	@docker-compose exec fpl-stats-api sh
 
 down: env-compose ## Stop the services and remove containers and volumes
 	@docker-compose down --volumes
@@ -35,3 +36,4 @@ ps: env-compose ## View current running containers
 	@docker-compose ps
 
 .PHONY: help env-compose build run stop logs shell down clean ps
+.EXPORT_ALL_VARIABLES:
