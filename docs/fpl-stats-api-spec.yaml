@@ -1,7 +1,7 @@
 openapi: '3.0.0'
 info:
   title: FPL Stats API Specification
-  description: <ap>This document provides a guide for consuming endpoints on the FPL Stats API. The purpose of this service is to return stats from the FPL API. All requests must contain a player_id in the query params as this is what the FPL API uses to authenticate requests. This can be found by logging into <a href='https://www.premierleague.com/'>FPL</a> and obtaining the value of the cookie named pl_profile (without the speech marks).<p>The API has an HTTP/RestFul-based interface using elements of Representation State Transfer (REST) methodology. This interface uses commands and parameters embedded in HTTP URL requests and responds with data in a JavaScript Object Notation (JSON) format.</p>
+  description: <ap>This document provides a guide for consuming endpoints on the FPL Stats API. The purpose of this service is to return stats from the FPL API. All requests must contain a player_cookie in the query params as this is what the FPL API uses to authenticate requests. This can be found by logging into <a href='https://www.premierleague.com/'>FPL</a> and obtaining the value of the cookie named pl_profile (without the speech marks).<p>The API has an HTTP/RestFul-based interface using elements of Representation State Transfer (REST) methodology. This interface uses commands and parameters embedded in HTTP URL requests and responds with data in a JavaScript Object Notation (JSON) format.</p>
   contact:
     name: FPL Stats API Support
     email: j.roberts07@outlook.com
@@ -18,7 +18,7 @@ paths:
         Returns the leagues that the player with the requested user entry has entered and their name.
       parameters:
         - $ref: '#/components/parameters/entry_id'
-        - $ref: '#/components/parameters/player_id'
+        - $ref: '#/components/parameters/player_cookie'
       responses:
         '200':
           description: The leagues the entry has entered and their name.
@@ -49,8 +49,8 @@ components:
       schema:
         type: number
         example: 1476876
-    player_id:
-      name: player_id
+    player_cookie:
+      name: player_cookie
       in: query
       description: The cookie provided to the player by the FPL website.
       required: true
@@ -93,7 +93,7 @@ components:
       properties:
         error:
           type: string
-          example: "PARAMETERS REQUIRED: player_id"
+          example: "PARAMETERS REQUIRED: player_cookie"
 
     internal_error_response:
       type: object

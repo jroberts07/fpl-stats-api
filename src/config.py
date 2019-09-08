@@ -1,6 +1,6 @@
-MONGODB_USERNAME = "fantasy"
+MONGODB_USERNAME = "fpl"
 MONGODB_PASSWORD = "password"
-MONGODB_HOST = "stats-database"
+MONGODB_HOST = "fpl-stats-database"
 MONGODB_URI = 'mongodb://{}:{}@{}'.format(
     MONGODB_USERNAME,
     MONGODB_PASSWORD,
@@ -13,7 +13,7 @@ USER_AGENT_HEADER = {
                   ' Mobile Safari/537.36'
 }
 LOGIN_COOKIE_HEADER = {
-    'Cookie': 'pl_profile="{player_id}"'
+    'Cookie': 'pl_profile="{player_cookie}"'
 }
 
 FPL_URL = "https://fantasy.premierleague.com/"

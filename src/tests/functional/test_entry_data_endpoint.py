@@ -22,7 +22,7 @@ async def test_success_multiple_classics(test_cli):
             body=fpl_data
         )
         resp = await test_cli.get(
-            '/entry_data/123?player_id=456'
+            '/entry_data/123?player_cookie=456'
         )
         assert resp.status == 200
         resp_json = await resp.json()
@@ -73,7 +73,7 @@ async def test_success_single_classics(test_cli):
             body=fpl_data
         )
         resp = await test_cli.get(
-            '/entry_data/123?player_id=456'
+            '/entry_data/123?player_cookie=456'
         )
         assert resp.status == 200
         resp_json = await resp.json()
@@ -107,7 +107,7 @@ async def test_no_leagues(test_cli):
             body=fpl_data
         )
         resp = await test_cli.get(
-            '/entry_data/123?player_id=456'
+            '/entry_data/123?player_cookie=456'
         )
         assert resp.status == 200
         resp_json = await resp.json()
@@ -136,7 +136,7 @@ async def test_no_name(test_cli):
             body=fpl_data
         )
         resp = await test_cli.get(
-            '/entry_data/123?player_id=456'
+            '/entry_data/123?player_cookie=456'
         )
         assert resp.status == 200
         resp_json = await resp.json()
@@ -151,19 +151,19 @@ async def test_no_name(test_cli):
         }
 
 
-async def test_no_player_id(test_cli):
-    """Test entry data with no player_id.
+async def test_no_player_cookie(test_cli):
+    """Test entry data with no player_cookie.
 
     Args:
         test_cli (obj): The test event loop.
     """
     resp = await test_cli.get(
-        '/entry_data/123?player_id='
+        '/entry_data/123?player_cookie='
     )
     assert resp.status == 400
     resp_json = await resp.json()
     assert resp_json == {
-        "error": "PARAMETERS REQUIRED: player_id"
+        "error": "PARAMETERS REQUIRED: player_cookie"
     }
 
 
@@ -182,7 +182,7 @@ async def test_fpl_error_response(test_cli):
             body=None
         )
         resp = await test_cli.get(
-            '/entry_data/123?player_id=456'
+            '/entry_data/123?player_cookie=456'
         )
         assert resp.status == 500
         resp_json = await resp.json()
