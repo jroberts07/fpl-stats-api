@@ -18,5 +18,6 @@ LOGIN_COOKIE_HEADER = {
 
 FPL_URL = "https://fantasy.premierleague.com/"
 ENTRY_DATA = 'api/entry/{entry_id}/'
+LEAGUE_DATA = 'api/leagues-classic/{league_id}/standings/'
 
 LOG_LEVEL = 'DEBUG'

@@ -1,15 +1,20 @@
-import aiounittest
+from aiounittest import futurized, AsyncTestCase
 import json
+from unittest.mock import Mock, patch
 
 from process_entry_data import get_leagues_entered, get_name
+from utils.exceptions import FantasyDataException
 
 
-class TestGetLeaguesEntered(aiounittest.AsyncTestCase):
+class TestGetLeaguesEntered(AsyncTestCase):
     """Async test class for testing leagues entered.
 
     Args:
         obj: Async test class from the aiounittest library.
     """
+    player_cookie = 'TEST'
+    config = None
+
     async def test_no_classic(self):
         """Test with no classic leagues.
         """
@@ -17,7 +22,9 @@ class TestGetLeaguesEntered(aiounittest.AsyncTestCase):
                 'tests/unit/data/entry_response_no_leagues.json'
         ) as json_file:
             entry_data = json.load(json_file)
-        result = await get_leagues_entered(entry_data)
+        result = await get_leagues_entered(
+            entry_data, self.player_cookie, self.config
+        )
         self.assertEqual(result, [])
 
     async def test_no_league_field(self):
@@ -27,17 +34,27 @@ class TestGetLeaguesEntered(aiounittest.AsyncTestCase):
                 'tests/unit/data/entry_response_no_league_field.json'
         ) as json_file:
             entry_data = json.load(json_file)
-        result = await get_leagues_entered(entry_data)
-        self.assertEqual(result, [])
+        with self.assertRaises(FantasyDataException):
+            await get_leagues_entered(
+                entry_data, self.player_cookie, self.config
+            )
 
     async def test_multiple_leagues(self):
         """Test with multiple classic leagues.
         """
+        mock_less_than_fifty_entries = Mock(return_value=futurized(True))
+        patch(
+            'process_entry_data.less_than_fifty_entries',
+            mock_less_than_fifty_entries
+        ).start()
         with open(
                 'tests/unit/data/entry_response_multiple_classic_leagues.json'
         ) as json_file:
             entry_data = json.load(json_file)
-        result = await get_leagues_entered(entry_data)
+        result = await get_leagues_entered(
+            entry_data, self.player_cookie, self.config
+        )
+        mock_less_than_fifty_entries.assert_called()
         self.assertEqual(
             result, [
                 {
@@ -64,7 +81,7 @@ class TestGetLeaguesEntered(aiounittest.AsyncTestCase):
         )
 
 
-class TestGetName(aiounittest.AsyncTestCase):
+class TestGetName(AsyncTestCase):
     """Async test class for testing get name.
 
     Args:

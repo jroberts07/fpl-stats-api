@@ -13,13 +13,32 @@ async def test_success_multiple_classics(test_cli):
                 'tests/functional/data/'
                 'entry_response_multiple_classic_leagues.json'
         ) as f:
-            fpl_data = f.read()
+            entry_data = f.read()
+        with open(
+                'tests/functional/data/'
+                'league_response_less_than_fifty.json'
+        ) as f:
+            league_data = f.read()
         m.get(
             sanic_app.config.FPL_URL + sanic_app.config.ENTRY_DATA.format(
                 entry_id=123
             ),
             status=200,
-            body=fpl_data
+            body=entry_data
+        )
+        m.get(
+            sanic_app.config.FPL_URL + sanic_app.config.LEAGUE_DATA.format(
+                league_id=1
+            ),
+            status=200,
+            body=league_data
+        )
+        m.get(
+            sanic_app.config.FPL_URL + sanic_app.config.LEAGUE_DATA.format(
+                league_id=2
+            ),
+            status=200,
+            body=league_data
         )
         resp = await test_cli.get(
             '/entry_data/123?player_cookie=456'
@@ -36,18 +55,6 @@ async def test_success_multiple_classics(test_cli):
                 {
                     "id": 2,
                     "name": "LEAGUE B",
-                },
-                {
-                    "id": 3,
-                    "name": "LEAGUE C",
-                },
-                {
-                    "id": 4,
-                    "name": "LEAGUE D",
-                },
-                {
-                    "id": 5,
-                    "name": "LEAGUE E",
                 }
             ]
         }
@@ -64,13 +71,25 @@ async def test_success_single_classics(test_cli):
                 'tests/functional/data/'
                 'entry_response_single_classic_league.json'
         ) as f:
-            fpl_data = f.read()
+            entry_data = f.read()
+        with open(
+                'tests/functional/data/'
+                'league_response_less_than_fifty.json'
+        ) as f:
+            league_data = f.read()
         m.get(
             sanic_app.config.FPL_URL + sanic_app.config.ENTRY_DATA.format(
                 entry_id=123
             ),
             status=200,
-            body=fpl_data
+            body=entry_data
+        )
+        m.get(
+            sanic_app.config.FPL_URL + sanic_app.config.LEAGUE_DATA.format(
+                league_id=1
+            ),
+            status=200,
+            body=league_data
         )
         resp = await test_cli.get(
             '/entry_data/123?player_cookie=456'
@@ -127,13 +146,25 @@ async def test_no_name(test_cli):
         with open(
                 'tests/functional/data/entry_response_no_name.json'
         ) as f:
-            fpl_data = f.read()
+            entry_data = f.read()
+        with open(
+                'tests/functional/data/'
+                'league_response_less_than_fifty.json'
+        ) as f:
+            league_data = f.read()
         m.get(
             sanic_app.config.FPL_URL + sanic_app.config.ENTRY_DATA.format(
                 entry_id=123
             ),
             status=200,
-            body=fpl_data
+            body=entry_data
+        )
+        m.get(
+            sanic_app.config.FPL_URL + sanic_app.config.LEAGUE_DATA.format(
+                league_id=1
+            ),
+            status=200,
+            body=league_data
         )
         resp = await test_cli.get(
             '/entry_data/123?player_cookie=456'
