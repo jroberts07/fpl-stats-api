@@ -78,10 +78,7 @@ async def less_than_fifty_entries(league_id, player_cookie, config):
     league_data = await call_fpl_endpoint(
         url, player_cookie, config
     )
-    if (
+    return (
             len(league_data['standings']['results']) <= 50
             and not league_data['standings']['has_next']
-    ):
-        return True
-    else:
-        return False
+    )
