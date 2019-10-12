@@ -1,5 +1,4 @@
 import datetime
-from sanic.log import logger
 from utils.exceptions import LocalDataNotFound
 
 

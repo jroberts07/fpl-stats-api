@@ -1,0 +1,17 @@
+{
+    "league": {
+        "id": 251924,
+        "name": "Caversham Gossip Girls"
+    },
+    "standings": {
+        "results": [
+            {
+                "event_total": 42,
+                "player_name": "Player A",
+                "rank": 1,
+                "total": 453,
+                "entry_name": "Team A"
+            }
+        ]
+    }
+}
