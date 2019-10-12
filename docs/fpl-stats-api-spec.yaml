@@ -39,6 +39,36 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_error_response'
 
+  /league_table/{league_id}:
+    get:
+      tags:
+      - League Data
+      summary: The live league table of the requested ID.
+      description:
+        Returns the live league table of the requested ID.
+      parameters:
+      - $ref: '#/components/parameters/league_id'
+      - $ref: '#/components/parameters/player_cookie'
+      responses:
+        '200':
+          description: The league entry names and points. Ranked in order.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/league_table_success_response'
+        '400':
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bad_request_error_response'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_error_response'
+
 components:
   parameters:
     entry_id:
@@ -49,6 +79,14 @@ components:
       schema:
         type: number
         example: 1476876
+    league_id:
+      name: league_id
+      in: path
+      description: The league id.
+      required: true
+      schema:
+        type: number
+        example: 2479576
     player_cookie:
       name: player_cookie
       in: query
@@ -59,11 +97,54 @@ components:
         example: "eyjdjd455TYHdbnmdJFyy7667HSHMNCII9idknfn&jYn=="
 
   schemas:
+    league_table_success_response:
+      type: object
+      required:
+      - league_name
+      - league_table
+      properties:
+        league_name:
+          type: string
+          description: The name of the league
+          example: "My Fantasy League"
+        league_table:
+          type: array
+          items:
+            type: object
+            required:
+            - rank
+            - previous_rank
+            - name
+            - gameweek_points
+            - total_points
+            properties:
+              rank:
+                type: number
+                description: The rank in the live league table.
+                example: 1
+              previous_rank:
+                type: number
+                description: The rank in the last confirmed table. The rank released by FPL at the end of each day after
+                  points have been confirmed. Used to determine rise or fall.
+                example: 3
+              name:
+                type: string
+                description: The entry name
+                example: "TEAM A"
+              gameweek_points:
+                type: string
+                description: The number of points in this gameweek.
+                example: 34
+              total_points:
+                type: string
+                description: The total number of points.
+                example: 438
+
     entry_data_success_response:
       type: object
       required:
-        - name
-        - leagues
+      - name
+      - leagues
       properties:
         name:
           type: string
@@ -74,8 +155,8 @@ components:
           items:
             type: object
             required:
-              - id
-              - name
+            - id
+            - name
             properties:
               id:
                 type: number
