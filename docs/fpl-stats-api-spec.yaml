@@ -15,7 +15,7 @@ paths:
         - Entry Data
       summary: The entry name and the leagues entered.
       description:
-        Returns the leagues that the player with the requested user entry has entered and their name.
+        Returns the leagues that the player with the requested user entry has entered and their name. Only returns leagues with less than fifty entries.
       parameters:
         - $ref: '#/components/parameters/entry_id'
         - $ref: '#/components/parameters/player_cookie'
