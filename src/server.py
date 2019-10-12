@@ -9,11 +9,14 @@ from sanic.log import logger
 import time
 import uuid
 
+from database_adapter import get_local_league_data, put_local_league_data
 from fpl_adapter import call_fpl_endpoint
 from process_entry_data import get_leagues_entered, get_name
+from process_league_data import process_remote_league_data
 from utils.commons import validate_mandatory
 from utils.exceptions import (
-    FantasyConnectionException, FantasyDataException, ValidationException
+    FantasyConnectionException, FantasyDataException, LocalDataNotFound,
+    ValidationException
 )
 
 app = Sanic(__name__)
@@ -24,8 +27,6 @@ app.config.from_pyfile('/usr/src/app/config.py')
 @app.listener('before_server_start')
 async def setup_db(app, loop):
     """Creates a mongo_db client. Disables the sanic default logger.
-    @TODO Use MongoDB for storing some static data so we don't have to keep
-    querying the remote API.
 
     Args:
         app (obj): The sanic app object.
@@ -129,6 +130,83 @@ async def entry_data_endpoint(request, entry_id):
         {
             'name': name,
             'leagues': leagues
+        }
+    )
+
+
+@app.get("/league_table/<league_id>")
+async def league_table_endpoint(request, league_id):
+    """League table endpoint. Will return the league name and live table of the
+    requested ID.
+
+    Args:
+        request (obj): The request object.
+        league_id (str): The league id.
+
+    Returns:
+       obj: The response object returned to the user.
+
+    """
+
+    async def get_remote_league_data():
+        """Inner function responsible for gathering remote data processing
+        it and storing it locally
+
+        Returns:
+            obj: The league data in a useful format.
+        """
+        logger.info('Fetching remote league data')
+        url = app.config.FPL_URL + app.config.LEAGUE_DATA.format(
+            league_id=league_id
+        )
+        remote_league_data = await process_remote_league_data(
+            await call_fpl_endpoint(
+                url, player_cookie, app.config
+            )
+        )
+        try:
+            await put_local_league_data(app.db, remote_league_data)
+        except Exception as e:
+            # Log the error but we don't care if we cant save locally.
+            logger.error(e)
+        return remote_league_data
+
+    try:
+        player_cookie = [
+            x[1] for x in request.query_args if x[0] == 'player_cookie'
+        ]
+        validate_mandatory(
+            {
+                'league_id': league_id,
+                'player_cookie': player_cookie
+            }
+        )
+        try:
+            league_data = await get_local_league_data(app.db, league_id)
+        except LocalDataNotFound:
+            league_data = await get_remote_league_data()
+        except Exception as e:
+            logger.error(e)
+            league_data = await get_remote_league_data()
+    except ValidationException as e:
+        return response.json(
+            e.get_message(),
+            status=HTTPStatus.BAD_REQUEST
+        )
+    except FantasyConnectionException as e:
+        return response.json(
+            e.get_message(),
+            status=HTTPStatus.INTERNAL_SERVER_ERROR
+        )
+    except FantasyDataException as e:
+        return response.json(
+            e.get_message(),
+            status=HTTPStatus.INTERNAL_SERVER_ERROR
+        )
+    return response.json(
+        {
+            'league_name': league_data['league_name'],
+            'standings': league_data['standings'],
         }
     )
 

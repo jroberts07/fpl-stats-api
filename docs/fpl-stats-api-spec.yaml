@@ -114,7 +114,8 @@ components:
             required:
             - rank
             - previous_rank
-            - name
+            - entry_name
+            - player_name
             - gameweek_points
             - total_points
             properties:
@@ -127,16 +128,20 @@ components:
                 description: The rank in the last confirmed table. The rank released by FPL at the end of each day after
                   points have been confirmed. Used to determine rise or fall.
                 example: 3
-              name:
+              entry_name:
                 type: string
                 description: The entry name
                 example: "TEAM A"
-              gameweek_points:
+              player_name:
                 type: string
+                description: The player name
+                example: "Joe Bloggs"
+              gameweek_points:
+                type: number
                 description: The number of points in this gameweek.
                 example: 34
               total_points:
-                type: string
+                type: number
                 description: The total number of points.
                 example: 438
 

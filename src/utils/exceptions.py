@@ -1,3 +1,7 @@
+class LocalDataNotFound(Exception):
+    pass
+
+
 class FantasyApiException(Exception):
     """The Fantasy API Exception Class.
 
@@ -29,10 +33,6 @@ class FantasyConnectionException(FantasyApiException):
 
 
 class FantasyDataException(FantasyApiException):
-    pass
-
-
-class NotFoundException(FantasyApiException):
     pass
 
 
