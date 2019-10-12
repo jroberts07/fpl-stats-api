@@ -9,11 +9,11 @@ from sanic.log import logger
 import time
 import uuid
 
-from fpl_adapter import get_entry_data
+from fpl_adapter import call_fpl_endpoint
 from process_entry_data import get_leagues_entered, get_name
 from utils.commons import validate_mandatory
 from utils.exceptions import (
-    FantasyConnectionException, ValidationException
+    FantasyConnectionException, FantasyDataException, ValidationException
 )
 
 app = Sanic(__name__)
@@ -100,11 +100,15 @@ async def entry_data_endpoint(request, entry_id):
                 'player_cookie': player_cookie
             }
         )
-        entry_data = await get_entry_data(
-            player_cookie, entry_id, app.config
+        url = app.config.FPL_URL + app.config.ENTRY_DATA.format(
+            entry_id=entry_id
+        )
+        entry_data = await call_fpl_endpoint(
+            url, player_cookie, app.config
         )
         leagues, name = await asyncio.gather(
-            get_leagues_entered(entry_data), get_name(entry_data)
+            get_leagues_entered(entry_data, player_cookie, app.config),
+            get_name(entry_data)
         )
     except ValidationException as e:
         return response.json(
@@ -112,6 +116,11 @@ async def entry_data_endpoint(request, entry_id):
             status=HTTPStatus.BAD_REQUEST
         )
     except FantasyConnectionException as e:
+        return response.json(
+            e.get_message(),
+            status=HTTPStatus.INTERNAL_SERVER_ERROR
+        )
+    except FantasyDataException as e:
         return response.json(
             e.get_message(),
             status=HTTPStatus.INTERNAL_SERVER_ERROR
