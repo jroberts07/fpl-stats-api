@@ -42,7 +42,7 @@ class TestProcessRemoteLeagueData(AsyncTestCase):
             ]
 
         )
-        self.assertEqual(result['league_name'], "Caversham Gossip Girls")
+        self.assertEqual(result['league_name'], "League A")
 
     async def test_one_entry(self):
         """Test league with one entry.
@@ -66,7 +66,7 @@ class TestProcessRemoteLeagueData(AsyncTestCase):
             ]
 
         )
-        self.assertEqual(result['league_name'], "Caversham Gossip Girls")
+        self.assertEqual(result['league_name'], "League A")
 
     async def test_bad_data(self):
         """Test bad response from API.

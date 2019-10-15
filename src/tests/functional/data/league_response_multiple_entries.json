@@ -1,6 +1,6 @@
 {
     "league": {
-        "id": 123,
+        "id": 251924,
         "name": "League A"
     },
     "standings": {
@@ -11,6 +11,14 @@
                 "rank": 1,
                 "total": 453,
                 "entry_name": "Team A"
+            },
+            {
+                "id": 5906467,
+                "event_total": 43,
+                "player_name": "Player B",
+                "rank": 1,
+                "total": 453,
+                "entry_name": "Team B"
             }
         ]
     }
