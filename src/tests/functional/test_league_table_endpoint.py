@@ -3,6 +3,11 @@ from server import app as sanic_app
 
 
 async def test_success(test_cli):
+    """Test league table successful request.
+
+    Args:
+        test_cli (obj): The test event loop.
+    """
     with aioresponses(passthrough=['http://127.0.0.1:']) as m:
         with open(
                 'tests/functional/data/'
@@ -45,6 +50,11 @@ async def test_success(test_cli):
 
 
 async def test_bad_response(test_cli):
+    """Test league table bad data returned from FPL.
+
+    Args:
+        test_cli (obj): The test event loop.
+    """
     with aioresponses(passthrough=['http://127.0.0.1:']) as m:
         with open(
                 'tests/functional/data/'
@@ -69,7 +79,7 @@ async def test_bad_response(test_cli):
 
 
 async def test_no_player_cookie(test_cli):
-    """Test entry data with no player_cookie.
+    """Test league table with no player_cookie.
 
     Args:
         test_cli (obj): The test event loop.
@@ -85,7 +95,7 @@ async def test_no_player_cookie(test_cli):
 
 
 async def test_fpl_error_response(test_cli):
-    """Test entry data with an error response from FPL.
+    """Test league table with an error response from FPL.
 
     Args:
         test_cli (obj): The test event loop.
