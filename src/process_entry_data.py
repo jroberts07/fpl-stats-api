@@ -40,7 +40,7 @@ async def get_leagues_entered(entry_data, player_cookie, config):
     except FantasyConnectionException:
         raise
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         raise FantasyDataException(ENTRY_DATA_ERROR_MSG)
     return leagues_entered
 

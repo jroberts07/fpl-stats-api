@@ -9,10 +9,14 @@ from sanic.log import logger
 import time
 import uuid
 
-from database_adapter import get_local_league_data, put_local_league_data
-from fpl_adapter import call_fpl_endpoint
+from database_adapter import get_local_league_data, get_local_static_data
+from fpl_adapter import (
+    call_fpl_endpoint, get_remote_league_data, get_remote_static_data
+)
 from process_entry_data import get_leagues_entered, get_name
-from process_league_data import process_remote_league_data
+from table_calculator import update_teams
+from process_static_data import determine_current_gameweek
+
 from utils.commons import validate_mandatory
 from utils.exceptions import (
     FantasyConnectionException, FantasyDataException, LocalDataNotFound,
@@ -147,30 +151,6 @@ async def league_table_endpoint(request, league_id):
        obj: The response object returned to the user.
 
     """
-
-    async def get_remote_league_data():
-        """Inner function responsible for gathering remote data processing
-        it and storing it locally
-
-        Returns:
-            obj: The league data in a useful format.
-        """
-        logger.info('Fetching remote league data')
-        url = app.config.FPL_URL + app.config.LEAGUE_DATA.format(
-            league_id=league_id
-        )
-        remote_league_data = await process_remote_league_data(
-            await call_fpl_endpoint(
-                url, player_cookie, app.config
-            )
-        )
-        try:
-            await put_local_league_data(app.db, remote_league_data)
-        except Exception as e:
-            # Log the error but we don't care if we cant save locally.
-            logger.error(e)
-        return remote_league_data
-
     try:
         player_cookie = [
             x[1] for x in request.query_args if x[0] == 'player_cookie'
@@ -182,12 +162,35 @@ async def league_table_endpoint(request, league_id):
             }
         )
         try:
+            local_static_data = await get_local_static_data(app.db, 'events')
+            gameweeks = local_static_data['events']
+        except LocalDataNotFound:
+            static_data = await get_remote_static_data(player_cookie, app)
+            gameweeks = static_data['events']
+        except Exception as e:
+            logger.exception(e)
+            static_data = await get_remote_static_data(player_cookie, app)
+            gameweeks = static_data['events']
+        current_gameweek = await determine_current_gameweek(gameweeks)
+        try:
             league_data = await get_local_league_data(app.db, league_id)
         except LocalDataNotFound:
-            league_data = await get_remote_league_data()
+            league_data = await get_remote_league_data(
+                league_id, player_cookie, app
+            )
         except Exception as e:
-            logger.error(e)
-            league_data = await get_remote_league_data()
+            logger.exception(e)
+            league_data = await get_remote_league_data(
+                league_id, player_cookie, app
+            )
+        if league_data['teams_confirmed']:
+            league_data['standings'] = await update_teams(
+                league_data['standings'], current_gameweek, player_cookie, app
+            )
+            league_data['teams_confirmed'] = True
+            put_local_league_data(db, league_data)
+        else:
+
     except ValidationException as e:
         return response.json(
             e.get_message(),

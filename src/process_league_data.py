@@ -2,6 +2,7 @@ import datetime
 
 from sanic.log import logger
 
+
 from utils.constants import ENTRY_DATA_ERROR_MSG
 from utils.exceptions import FantasyDataException
 
@@ -30,15 +31,20 @@ async def process_remote_league_data(remote_league_data):
         for entry in remote_league_data['standings']['results']:
             league_data['standings'].append(
                 {
-                    'rank': entry['rank'],
-                    'previous_rank': entry['rank'],
-                    'entry_name': entry['entry_name'],
+                    'entry_id': entry['entry'],
                     'player_name': entry['player_name'],
-                    'gameweek_points': entry['event_total'],
-                    'total_points': entry['total']
+                    'entry_name': entry['entry_name'],
+                    'gameweek_points': 0,
+                    'total_points': entry['total'] - entry['event_total'],
+                    'confirmed_rank': entry['rank_sort'],
+                    'live_rank': entry['rank_sort'],
+                    'teams_confirmed': False
                 }
             )
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         raise FantasyDataException(ENTRY_DATA_ERROR_MSG)
     return league_data
+
+
+
