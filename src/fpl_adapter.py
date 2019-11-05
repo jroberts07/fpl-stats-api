@@ -1,5 +1,6 @@
 from sanic.log import logger
 
+from database_adapter import put_local_static_data
 from utils.client import get_session
 from utils.constants import FANTASY_CONNECTION_ERROR_MSG
 from utils.exceptions import FantasyConnectionException
@@ -47,5 +48,30 @@ async def call_fpl_endpoint(url, player_cookie, config):
                         FANTASY_CONNECTION_ERROR_MSG
                     )
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         raise FantasyConnectionException(FANTASY_CONNECTION_ERROR_MSG)
+
+
+async def get_remote_static_data(player_cookie, app):
+    """Function responsible for gathering remote static data processing
+    it and storing it locally
+
+    Args:
+        player_cookie (obj): The player cookie used for authentication on
+        the FPL API.
+        app (obj): The sanic app.
+
+    Returns:
+        obj: The static data in a useful format.
+    """
+    logger.info('Fetching remote static data')
+    url = app.config.FPL_URL + app.config.STATIC_DATA
+    remote_static_data = await call_fpl_endpoint(
+            url, player_cookie, app.config
+    )
+    try:
+        await put_local_static_data(app.db, remote_static_data)
+    except Exception as e:
+        # Log the error but we don't care if we cant save locally.
+        logger.exception(e)
+    return remote_static_data

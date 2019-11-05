@@ -11,6 +11,7 @@ import uuid
 
 from fpl_adapter import call_fpl_endpoint
 from process_entry_data import get_leagues_entered, get_name
+from static_data_handler import get_static_data, determine_current_gameweek
 from utils.commons import validate_mandatory
 from utils.exceptions import (
     FantasyConnectionException, FantasyDataException, ValidationException
@@ -131,6 +132,41 @@ async def entry_data_endpoint(request, entry_id):
             'leagues': leagues
         }
     )
+
+
+@app.get("/league_table/<league_id>")
+async def league_table_endpoint(request, league_id):
+    """League table endpoint. Will return the league name and live table of the
+    requested ID.
+
+    Args:
+     request (obj): The request object.
+     league_id (str): The league id.
+
+    Returns:
+    obj: The response object returned to the user.
+
+    """
+    try:
+        player_cookie = [
+            x[1] for x in request.query_args if x[0] == 'player_cookie'
+        ]
+        validate_mandatory(
+            {
+                'league_id': league_id,
+                'player_cookie': player_cookie
+            }
+        )
+        gameweeks = await get_static_data(app, player_cookie, 'events')
+        current_gameweek = await determine_current_gameweek(gameweeks)
+        return response.json(
+            current_gameweek
+        )
+    except ValidationException as e:
+        return response.json(
+            e.get_message(),
+            status=HTTPStatus.BAD_REQUEST
+        )
 
 
 @app.route("/ping")
