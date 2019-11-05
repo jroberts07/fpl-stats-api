@@ -7,6 +7,17 @@ from utils.exceptions import (FantasyDataException, LocalDataNotFoundException)
 
 
 async def get_static_data(app, player_cookie, field):
+    """Returns the field requested from the static data.
+
+    Args:
+        app (obj): Then sanic app.
+        player_cookie (str): Cookie used for FPL api,
+        field (str): The requested static data field.
+
+    Returns:
+        obj: The requested field.
+
+    """
     try:
         local_static_data = await get_local_static_data(app.db, field)
         field_data = local_static_data[field]
