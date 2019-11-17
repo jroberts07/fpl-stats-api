@@ -38,7 +38,7 @@ async def determine_current_gameweek(gameweeks):
         gameweeks (obj): An array containing all the gameweeks data.
 
     Returns:
-        int: The current gameweek.
+        obj: The current gameweek info.
 
     Raises:
         FantasyDataException: If there is an error processing the data returned

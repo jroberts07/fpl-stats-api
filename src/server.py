@@ -13,6 +13,7 @@ from fpl_adapter import call_fpl_endpoint
 from league_data_handler import add_times_to_league_data, get_league_data
 from process_entry_data import get_leagues_entered, get_name
 from static_data_handler import get_static_data, determine_current_gameweek
+from team_picks_handler import get_entry_picks
 from utils.commons import validate_mandatory
 from utils.exceptions import (
     FantasyConnectionException, FantasyDataException, ValidationException
@@ -165,10 +166,15 @@ async def league_table_endpoint(request, league_id):
             get_league_data(app, player_cookie, league_id)
         )
         current_gameweek = await determine_current_gameweek(gameweeks)
+        # True if league data has been fetched remotley, meaning we need to add
+        # gameweek info.
         if update_league:
             league_data = await add_times_to_league_data(
                 app.db, league_data, current_gameweek
             )
+        league_data = await get_entry_picks(
+            player_cookie, app, league_data, current_gameweek['id']
+        )
         return response.json(
             league_data
         )

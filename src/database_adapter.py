@@ -58,7 +58,9 @@ async def get_local_league_data(db, league_id):
     Raises:
         LocalDataNotFound: If local data isn't found
     """
-    league_data = await db.league_data.find_one({'league_id': league_id})
+    league_data = await db.league_data.find_one(
+        {'league_id': league_id}, {'_id': 0}
+    )
     if (
             league_data and
             league_data['end_time'] and

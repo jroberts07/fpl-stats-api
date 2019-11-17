@@ -104,3 +104,23 @@ async def get_remote_league_data(league_id, player_cookie, app):
         # Log the error but we don't care if we cant save locally.
         logger.exception(e)
     return remote_league_data
+
+
+async def get_remote_picks_data(entry_id, gameweek, player_cookie, app):
+    """Function responsible for gathering remote picks data for the entry requested
+    Args:
+        entry_id (int): The ID of the entry to fetch.
+        gameweek (int): The gameweek to get the picks for.
+        player_cookie (obj): The player cookie used for authentication on
+        the FPL API.
+        app (obj): The sanic app.
+    Returns:
+        obj: The picks for the requested entry for that gameweek.
+    """
+    logger.info('Fetching remote picks data')
+    url = app.config.FPL_URL + app.config.PICKS_DATA.format(
+        entry_id=entry_id, gameweek=gameweek
+    )
+    return await call_fpl_endpoint(
+            url, player_cookie, app.config
+    )

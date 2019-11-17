@@ -1,4 +1,5 @@
 from aiounittest import AsyncTestCase
+from datetime import datetime
 import json
 
 from server import app
@@ -33,8 +34,8 @@ class TestAddDatesToLeagueData(AsyncTestCase):
             {
                 'league_id': "123",
                 'league_name': "League A",
-                'start_time': "2019-08-09T18:00:00Z",
-                'end_time': "2019-08-09T19:00:00Z",
+                'start_time': datetime(2019, 8, 9, 18, 0),
+                'end_time': datetime(2019, 8, 9, 19, 0),
                 "standings": [
                     {
                         'entry_id': "100",

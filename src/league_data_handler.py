@@ -1,3 +1,4 @@
+from datetime import datetime
 from sanic.log import logger
 
 from database_adapter import (put_local_league_data, get_local_league_data)
@@ -11,7 +12,7 @@ async def get_league_data(app, player_cookie, league_id):
     Args:
         app (obj): Then sanic app.
         player_cookie (str): Cookie used for FPL api.
-        league_id (int): The ID of the requested league.
+        league_id (str): The ID of the requested league.
         current_gameweek (obj): Information about the current gameweek.
 
     Returns:
@@ -48,8 +49,12 @@ async def add_times_to_league_data(db, league_data, gameweek):
         obj: The league data.
 
     """
-    league_data['start_time'] = gameweek['start_time']
-    league_data['end_time'] = gameweek['end_time']
+    league_data['start_time'] = datetime.strptime(
+        gameweek['start_time'], "%Y-%m-%dT%H:%M:%SZ"
+    )
+    league_data['end_time'] = datetime.strptime(
+        gameweek['end_time'], "%Y-%m-%dT%H:%M:%SZ"
+    )
     try:
         await put_local_league_data(db, league_data)
     except Exception as e:
