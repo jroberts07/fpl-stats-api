@@ -21,5 +21,6 @@ ENTRY_DATA = 'api/entry/{entry_id}/'
 LEAGUE_DATA = 'api/leagues-classic/{league_id}/standings/'
 STATIC_DATA = 'api/bootstrap-static/'
 PICKS_DATA = 'api/entry/{entry_id}/event/{gameweek}/picks/'
+LIVE_DATA = "api/event/{gameweek}/live/"
 
 LOG_LEVEL = 'DEBUG'

@@ -124,3 +124,22 @@ async def get_remote_picks_data(entry_id, gameweek, player_cookie, app):
     return await call_fpl_endpoint(
             url, player_cookie, app.config
     )
+
+
+async def get_remote_live_data(gameweek, player_cookie, app):
+    """Function responsible for gathering remote live data.
+    Args:
+        gameweek (int): The gameweek to get the live data for.
+        player_cookie (obj): The player cookie used for authentication on
+        the FPL API.
+        app (obj): The sanic app.
+    Returns:
+        obj: The live data.
+    """
+    logger.info('Fetching remote live data')
+    url = app.config.FPL_URL + app.config.LIVE_DATA.format(
+        gameweek=gameweek
+    )
+    return await call_fpl_endpoint(
+            url, player_cookie, app.config
+    )

@@ -9,7 +9,7 @@ from sanic.log import logger
 import time
 import uuid
 
-from fpl_adapter import call_fpl_endpoint
+from fpl_adapter import call_fpl_endpoint, get_remote_live_data
 from league_data_handler import add_times_to_league_data, get_league_data
 from process_entry_data import get_leagues_entered, get_name
 from static_data_handler import get_static_data, determine_current_gameweek
@@ -174,6 +174,9 @@ async def league_table_endpoint(request, league_id):
             )
         league_data = await get_entry_picks(
             player_cookie, app, league_data, current_gameweek['id']
+        )
+        live_data = await get_remote_live_data(
+            current_gameweek['id'], player_cookie, app
         )
         return response.json(
             league_data
