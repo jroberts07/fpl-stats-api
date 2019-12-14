@@ -1,0 +1,36 @@
+{
+    "standings": [
+        {
+            "entry_id": "1",
+            "live_points": 0,
+            "total_points": 100,
+            "confirmed_rank": 1,
+            "live_rank": 0,
+            "picks": [
+                {
+                    "element": 10,
+                    "position": 1,
+                    "multiplier": 1,
+                    "is_captain": false,
+                    "is_vice_captain": false
+                }
+            ]
+        },
+        {
+            "entry_id": "2",
+            "live_points": 0,
+            "total_points": 99,
+            "confirmed_rank": 2,
+            "live_rank": 0,
+            "picks": [
+                {
+                    "element": 30,
+                    "position": 1,
+                    "multiplier": 1,
+                    "is_captain": false,
+                    "is_vice_captain": false
+                }
+            ]
+        }
+    ]
+}

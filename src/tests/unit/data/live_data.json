@@ -1,0 +1,64 @@
+{
+  "elements": [
+    {
+      "id": 10,
+      "stats": {
+        "bonus": 0,
+        "bps": 0,
+        "total_points": -5
+      },
+      "explain": [
+        {
+          "fixture": 161,
+          "stats": [
+            {
+              "identifier": "minutes",
+              "points": 0,
+              "value": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "stats": {
+        "bonus": 0,
+        "bps": 0,
+        "total_points": 0
+      },
+      "explain": [
+        {
+          "fixture": 161,
+          "stats": [
+            {
+              "identifier": "minutes",
+              "points": 0,
+              "value": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "stats": {
+        "bonus": 0,
+        "bps": 0,
+        "total_points": 5
+      },
+      "explain": [
+        {
+          "fixture": 161,
+          "stats": [
+            {
+              "identifier": "minutes",
+              "points": 0,
+              "value": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

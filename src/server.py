@@ -9,6 +9,7 @@ from sanic.log import logger
 import time
 import uuid
 
+from calculate_table import calculate_table
 from fpl_adapter import call_fpl_endpoint, get_remote_live_data
 from league_data_handler import add_times_to_league_data, get_league_data
 from process_entry_data import get_leagues_entered, get_name
@@ -27,8 +28,6 @@ app.config.from_pyfile('/usr/src/app/config.py')
 @app.listener('before_server_start')
 async def setup_db(app, loop):
     """Creates a mongo_db client. Disables the sanic default logger.
-    @TODO Use MongoDB for storing some static data so we don't have to keep
-    querying the remote API.
 
     Args:
         app (obj): The sanic app object.
@@ -178,6 +177,7 @@ async def league_table_endpoint(request, league_id):
         live_data = await get_remote_live_data(
             current_gameweek['id'], player_cookie, app
         )
+        league_data = calculate_table(league_data, live_data)
         return response.json(
             league_data
         )
