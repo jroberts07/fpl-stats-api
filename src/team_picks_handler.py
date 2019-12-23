@@ -19,12 +19,15 @@ async def get_entry_picks(player_cookie, app, league_data, gameweek):
 
     """
     # Update picks every 5 minutes for 1 hour after gameweek started.
+    # Then every hour.
     if (
         "picks_updated" in league_data
         and league_data["picks_updated"] + datetime.timedelta(minutes=5)
         < datetime.datetime.now()
-        and league_data["picks_updated"] <
-        league_data["start_time"] + datetime.timedelta(hours=1)
+        < league_data["start_time"] + datetime.timedelta(hours=1)
+        or "picks_updated" in league_data
+        and league_data["picks_updated"] + datetime.timedelta(hours=1)
+        < datetime.datetime.now()
         or "picks_updated" not in league_data
     ):
         league_data['standings'] = await asyncio.gather(

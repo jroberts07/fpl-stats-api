@@ -22,7 +22,7 @@ from utils.exceptions import (
 
 app = Sanic(__name__)
 CORS(app)
-app.config.from_pyfile('/usr/src/app/config.py')
+app.config.from_pyfile('config.py')
 
 
 @app.listener('before_server_start')
@@ -178,6 +178,9 @@ async def league_table_endpoint(request, league_id):
             current_gameweek['id'], player_cookie, app
         )
         league_data = calculate_table(league_data, live_data)
+        del league_data["start_time"]
+        del league_data["end_time"]
+        del league_data["picks_updated"]
         return response.json(
             league_data
         )
@@ -185,6 +188,16 @@ async def league_table_endpoint(request, league_id):
         return response.json(
             e.get_message(),
             status=HTTPStatus.BAD_REQUEST
+        )
+    except FantasyConnectionException as e:
+        return response.json(
+            e.get_message(),
+            status=HTTPStatus.INTERNAL_SERVER_ERROR
+        )
+    except FantasyDataException as e:
+        return response.json(
+            e.get_message(),
+            status=HTTPStatus.INTERNAL_SERVER_ERROR
         )
 
 

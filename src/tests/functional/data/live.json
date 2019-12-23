@@ -1,0 +1,16 @@
+{
+  "elements": [
+    {
+      "id": 1,
+      "stats": {
+        "total_points": 0
+      }
+    },
+    {
+      "id": 2,
+      "stats": {
+        "total_points": 20
+      }
+    }
+  ]
+}

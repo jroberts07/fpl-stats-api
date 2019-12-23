@@ -39,12 +39,50 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_error_response'
 
+  /league_table/{league_id}:
+    get:
+      tags:
+        - League Data
+      summary: The live league table for the league ID provided.
+      description:
+        Returns the league table of the requested league ID with live points and ranking
+      parameters:
+        - $ref: '#/components/parameters/league_id'
+        - $ref: '#/components/parameters/player_cookie'
+      responses:
+        '200':
+          description: The live league table.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/league_table_success_response'
+        '400':
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bad_request_error_response'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_error_response'
+
 components:
   parameters:
     entry_id:
       name: entry_id
       in: path
       description: The players entry id.
+      required: true
+      schema:
+        type: number
+        example: 1476876
+    league_id:
+      name: league_id
+      in: path
+      description: The league id.
       required: true
       schema:
         type: number
@@ -85,6 +123,64 @@ components:
                 type: string
                 description: The name of the leagie
                 example: "My Fantasy League"
+
+    league_table_success_response:
+      type: object
+      required:
+        - league_id
+        - league_name
+        - standings
+      properties:
+        league_id:
+          type: string
+          description: The ID of the league.
+          example: "27364"
+        league_name:
+          type: string
+          description: The name of the league.
+          example: "League A"
+        standings:
+          type: array
+          description: The sorted array of current live standings.
+          items:
+            type: object
+            required:
+              - entry_id
+              - player_name
+              - entry_name
+              - live_points
+              - total_points
+              - confirmed_rank
+              - live_rank
+            properties:
+              entry_id:
+                type: string
+                description: The ID of the entry.
+                example: "17983"
+              player_name:
+                type: string
+                description: The name of the player.
+                example: "Player A"
+              entry_name:
+                type: string
+                description: The name of the entry.
+                example: "Team A"
+              live_points:
+                type: integer
+                description: The number of total points plus the live points.
+                example: 100
+              total_points:
+                type: integer
+                description: The number of total points at the start of the gameweek.
+                example: 90
+              confirmed_rank:
+                type: integer
+                description: The rank at the start of the gameweek.
+                example: 2
+              live_rank:
+                type: integer
+                description: The live rank.
+                example: 1
 
     bad_request_error_response:
       type: object

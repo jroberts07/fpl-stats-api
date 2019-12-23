@@ -1,0 +1,18 @@
+{
+  "events": [
+    {
+      "id": 1,
+      "deadline_time": "SET THIS IN TEST",
+      "is_previous": false,
+      "is_current": true,
+      "is_next": false
+    },
+    {
+      "id": 2,
+      "deadline_time": "SET THIS IN TEST",
+      "is_previous": false,
+      "is_current": false,
+      "is_next": true
+    }
+  ]
+}

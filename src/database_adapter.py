@@ -31,7 +31,7 @@ async def get_local_static_data(db, field):
         return static_data
     else:
         # Is returned when data isn't found or needs updating.
-        raise LocalDataNotFoundException
+        raise LocalDataNotFoundException("Local static data not found.")
 
 
 async def put_local_static_data(db, static_data):
@@ -69,7 +69,7 @@ async def get_local_league_data(db, league_id):
         return league_data
     else:
         # Is returned when data isn't found or needs updating.
-        raise LocalDataNotFoundException
+        raise LocalDataNotFoundException("Local league data not found")
 
 
 async def put_local_league_data(db, league_data):

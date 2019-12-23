@@ -32,7 +32,7 @@ class FantasyDataException(FantasyApiException):
     pass
 
 
-class LocalDataNotFoundException(FantasyApiException):
+class LocalDataNotFoundException(Exception):
     pass
 
 

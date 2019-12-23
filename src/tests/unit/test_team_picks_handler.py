@@ -110,11 +110,23 @@ class TestGetEntryPicks(AsyncTestCase):
             ]
         )
 
-    async def test_no_update_picks_one_hour_after_start(self):
-        """Test no remote update if gameweek started more than 1 hour ago.
+    async def test__update_picks_if_one_hour_since_last_update(self):
+        """Test remote update if picks over one hour old.
         """
-        picks_updated = datetime.datetime.now() + datetime.timedelta(hours=2)
-        start_time = datetime.datetime.now()
+        picks_updated = datetime.datetime.now() - datetime.timedelta(hours=2)
+        start_time = datetime.datetime.now() - datetime.timedelta(hours=3)
+        mock_get_remote_picks_data = Mock(return_value=futurized({
+            "picks": "TEST PICK"
+        }))
+        patch(
+            'team_picks_handler.get_remote_picks_data',
+            mock_get_remote_picks_data
+        ).start()
+        mock_put_local_league_data = Mock(return_value=futurized(None))
+        patch(
+            'team_picks_handler.put_local_league_data',
+            mock_put_local_league_data
+        ).start()
         league_data = {
             "picks_updated": picks_updated,
             "start_time": start_time,
@@ -130,14 +142,18 @@ class TestGetEntryPicks(AsyncTestCase):
         result = await get_entry_picks(
             self.player_cookie, app, league_data, self.gameweek
         )
+        mock_get_remote_picks_data.assert_called()
+        mock_put_local_league_data.assert_called()
         self.assertEqual(
             result["standings"],
             [
                 {
-                    "entry_id": 1
+                    "entry_id": 1,
+                    "picks": "TEST PICK"
                 },
                 {
-                    "entry_id": 2
+                    "entry_id": 2,
+                    "picks": "TEST PICK"
                 },
             ]
         )

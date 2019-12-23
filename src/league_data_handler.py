@@ -52,9 +52,12 @@ async def add_times_to_league_data(db, league_data, gameweek):
     league_data['start_time'] = datetime.strptime(
         gameweek['start_time'], "%Y-%m-%dT%H:%M:%SZ"
     )
-    league_data['end_time'] = datetime.strptime(
-        gameweek['end_time'], "%Y-%m-%dT%H:%M:%SZ"
-    )
+    if gameweek['end_time']:
+        league_data['end_time'] = datetime.strptime(
+            gameweek['end_time'], "%Y-%m-%dT%H:%M:%SZ"
+        )
+    else:
+        league_data['end_time'] = None
     try:
         await put_local_league_data(db, league_data)
     except Exception as e:
