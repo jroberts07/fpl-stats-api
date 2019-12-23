@@ -9,8 +9,12 @@ from sanic.log import logger
 import time
 import uuid
 
-from fpl_adapter import call_fpl_endpoint
+from calculate_table import calculate_table
+from fpl_adapter import call_fpl_endpoint, get_remote_live_data
+from league_data_handler import add_times_to_league_data, get_league_data
 from process_entry_data import get_leagues_entered, get_name
+from static_data_handler import get_static_data, determine_current_gameweek
+from team_picks_handler import get_entry_picks
 from utils.commons import validate_mandatory
 from utils.exceptions import (
     FantasyConnectionException, FantasyDataException, ValidationException
@@ -18,14 +22,12 @@ from utils.exceptions import (
 
 app = Sanic(__name__)
 CORS(app)
-app.config.from_pyfile('/usr/src/app/config.py')
+app.config.from_pyfile('config.py')
 
 
 @app.listener('before_server_start')
 async def setup_db(app, loop):
     """Creates a mongo_db client. Disables the sanic default logger.
-    @TODO Use MongoDB for storing some static data so we don't have to keep
-    querying the remote API.
 
     Args:
         app (obj): The sanic app object.
@@ -131,6 +133,72 @@ async def entry_data_endpoint(request, entry_id):
             'leagues': leagues
         }
     )
+
+
+@app.get("/league_table/<league_id>")
+async def league_table_endpoint(request, league_id):
+    """League table endpoint. Will return the league name and live table of the
+    requested ID.
+
+    Args:
+     request (obj): The request object.
+     league_id (str): The league id.
+
+    Returns:
+    obj: The response object returned to the user.
+
+    """
+    try:
+        player_cookie = [
+            x[1] for x in request.query_args if x[0] == 'player_cookie'
+        ]
+        validate_mandatory(
+            {
+                'league_id': league_id,
+                'player_cookie': player_cookie
+            }
+        )
+        (
+            gameweeks, (update_league, league_data)
+        ) = await asyncio.gather(
+            get_static_data(app, player_cookie, 'events'),
+            get_league_data(app, player_cookie, league_id)
+        )
+        current_gameweek = await determine_current_gameweek(gameweeks)
+        # True if league data has been fetched remotley, meaning we need to add
+        # gameweek info.
+        if update_league:
+            league_data = await add_times_to_league_data(
+                app.db, league_data, current_gameweek
+            )
+        league_data = await get_entry_picks(
+            player_cookie, app, league_data, current_gameweek['id']
+        )
+        live_data = await get_remote_live_data(
+            current_gameweek['id'], player_cookie, app
+        )
+        league_data = calculate_table(league_data, live_data)
+        del league_data["start_time"]
+        del league_data["end_time"]
+        del league_data["picks_updated"]
+        return response.json(
+            league_data
+        )
+    except ValidationException as e:
+        return response.json(
+            e.get_message(),
+            status=HTTPStatus.BAD_REQUEST
+        )
+    except FantasyConnectionException as e:
+        return response.json(
+            e.get_message(),
+            status=HTTPStatus.INTERNAL_SERVER_ERROR
+        )
+    except FantasyDataException as e:
+        return response.json(
+            e.get_message(),
+            status=HTTPStatus.INTERNAL_SERVER_ERROR
+        )
 
 
 @app.route("/ping")

@@ -5,9 +5,9 @@ services:
     build:
       context: ../../fpl-stats-api/src
       dockerfile: Dockerfile
-    image: fpl/fpl-stats-api
-    links:
+    depends_on:
       - fpl-stats-database
+    image: fpl/fpl-stats-api
     ports:
       - "30000:8000"
     volumes:
@@ -26,7 +26,7 @@ services:
     build:
       context: ../../fpl-stats-api/src
       dockerfile: Dockerfile.test
-    links:
+    depends_on:
       - fpl-stats-database
     volumes:
       - .:/usr/src/app

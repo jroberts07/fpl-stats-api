@@ -1,5 +1,7 @@
 from sanic.log import logger
 
+from database_adapter import (put_local_league_data, put_local_static_data)
+from process_league_data import process_remote_league_data
 from utils.client import get_session
 from utils.constants import FANTASY_CONNECTION_ERROR_MSG
 from utils.exceptions import FantasyConnectionException
@@ -47,5 +49,97 @@ async def call_fpl_endpoint(url, player_cookie, config):
                         FANTASY_CONNECTION_ERROR_MSG
                     )
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         raise FantasyConnectionException(FANTASY_CONNECTION_ERROR_MSG)
+
+
+async def get_remote_static_data(player_cookie, app):
+    """Function responsible for gathering remote static data processing
+    it and storing it locally
+
+    Args:
+        player_cookie (obj): The player cookie used for authentication on
+        the FPL API.
+        app (obj): The sanic app.
+
+    Returns:
+        obj: The static data in a useful format.
+    """
+    logger.info('Fetching remote static data')
+    url = app.config.FPL_URL + app.config.STATIC_DATA
+    remote_static_data = await call_fpl_endpoint(
+            url, player_cookie, app.config
+    )
+    try:
+        await put_local_static_data(app.db, remote_static_data)
+    except Exception as e:
+        # Log the error but we don't care if we cant save locally.
+        logger.exception(e)
+    return remote_static_data
+
+
+async def get_remote_league_data(league_id, player_cookie, app):
+    """Function responsible for gathering remote league data processing
+    it and storing it locally
+    Args:
+        league_id (int): The ID of the league to fetch.
+        player_cookie (obj): The player cookie used for authentication on
+        the FPL API.
+        app (obj): The sanic app.
+    Returns:
+        obj: The league data in a useful format.
+    """
+    logger.info('Fetching remote league data')
+    url = app.config.FPL_URL + app.config.LEAGUE_DATA.format(
+        league_id=league_id
+    )
+    remote_league_data = await process_remote_league_data(
+        await call_fpl_endpoint(
+            url, player_cookie, app.config
+        )
+    )
+    try:
+        await put_local_league_data(app.db, remote_league_data)
+    except Exception as e:
+        # Log the error but we don't care if we cant save locally.
+        logger.exception(e)
+    return remote_league_data
+
+
+async def get_remote_picks_data(entry_id, gameweek, player_cookie, app):
+    """Function responsible for gathering remote picks data for the entry requested
+    Args:
+        entry_id (int): The ID of the entry to fetch.
+        gameweek (int): The gameweek to get the picks for.
+        player_cookie (obj): The player cookie used for authentication on
+        the FPL API.
+        app (obj): The sanic app.
+    Returns:
+        obj: The picks for the requested entry for that gameweek.
+    """
+    logger.info('Fetching remote picks data')
+    url = app.config.FPL_URL + app.config.PICKS_DATA.format(
+        entry_id=entry_id, gameweek=gameweek
+    )
+    return await call_fpl_endpoint(
+            url, player_cookie, app.config
+    )
+
+
+async def get_remote_live_data(gameweek, player_cookie, app):
+    """Function responsible for gathering remote live data.
+    Args:
+        gameweek (int): The gameweek to get the live data for.
+        player_cookie (obj): The player cookie used for authentication on
+        the FPL API.
+        app (obj): The sanic app.
+    Returns:
+        obj: The live data.
+    """
+    logger.info('Fetching remote live data')
+    url = app.config.FPL_URL + app.config.LIVE_DATA.format(
+        gameweek=gameweek
+    )
+    return await call_fpl_endpoint(
+            url, player_cookie, app.config
+    )

@@ -11,13 +11,13 @@ env-compose:
 build: env-compose ## Builds the docker image to run the app
 	@docker-compose build
 
-run: env-compose ## Runs the code in a container
+run: env-compose reset-db ## Runs the code in a container
 	@docker-compose up -d fpl-stats-api
 
 stop: env-compose ## Stop the services required for the dev environment.
 	@docker-compose stop
 
-test: env-compose ## Runs the unit tests
+test: env-compose reset-db ## Runs the unit tests
 	@docker-compose run --rm fpl-stats-api-test
 
 logs: env-compose ## Logs
@@ -34,6 +34,10 @@ clean: env-compose ## Stop the services and remove containers, volumes and docke
 
 ps: env-compose ## View current running containers
 	@docker-compose ps
+
+reset-db: env-compose ## Database has no volumes so reset destroys it.
+	@docker-compose stop fpl-stats-database
+	@docker-compose rm -f fpl-stats-database
 
 .PHONY: help env-compose build run stop logs shell down clean ps
 .EXPORT_ALL_VARIABLES:
