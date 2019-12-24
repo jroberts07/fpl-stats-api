@@ -8,7 +8,7 @@ This may change as the API evolves but the current design methodology is this:
 
  - The API should be built following the micro service design principles and crucially that each request should be independent of all others.
  - The API uses the async python framework Sanic. For more complex statistics multiple FPL API endpoints will need to be called and the data processing may involve complex loops. Thus async is required to keep processing time to a minimum.
- - A mongoDB has been attached in the Dockerfile. This is currently unused but the rationale behind it is that some static data from the FPL API may be able to be stored here and only needs updating when there is a data reload (often weekly). This would save making requests to the FPL API on every request.
+ - A mongoDB has been attached in the Dockerfile. This is used to store FPL data when requersts are made in order to prevent repeated calls to the FPL endpoints. This data should have expiry times set to the application knows when it needs to request fresh data.
 
 # Usage
 
@@ -28,3 +28,7 @@ The entry_id can be obtained by visiting the [FPL website](https://fantasy.premi
 # Contribution
 
 Please feel free to raise issues if you have new endpoints you'd like to see or think there are ways the current code can be improved. Or even better submit PRs yourself. Each new endpoint should be accompanied with python doc comments, unit & functional tests and and an update to the spec.
+
+# Version Control
+
+A major release is issued when an exisitng endpoint is modified to the point where someone who consumed it could no longer continue to do so or a new endpoint is added. A minor release is issued when an exisitng endpoint is modified in a non critical way. A patch is released for any critical security issues or bugs.
