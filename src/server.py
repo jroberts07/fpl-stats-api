@@ -3,6 +3,7 @@ from http import HTTPStatus
 import motor.motor_asyncio
 from sanic import Sanic
 from sanic import response
+from sanic_cors import CORS
 from sanic.log import access_logger
 from sanic.log import logger
 import time
@@ -16,6 +17,7 @@ from utils.exceptions import (
 )
 
 app = Sanic(__name__)
+CORS(app)
 app.config.from_pyfile('/usr/src/app/config.py')
 
 
@@ -34,7 +36,7 @@ async def setup_db(app, loop):
     client = motor.motor_asyncio.AsyncIOMotorClient(
         app.config.MONGODB_URI
     )
-    app.db = client.fantasy_stats
+    app.db = client.fpl_stats
 
 
 @app.middleware('request')
@@ -89,15 +91,17 @@ async def entry_data_endpoint(request, entry_id):
 
     """
     try:
-        player_id = [x[1] for x in request.query_args if x[0] == 'player_id']
+        player_cookie = [
+            x[1] for x in request.query_args if x[0] == 'player_cookie'
+        ]
         validate_mandatory(
             {
                 'entry_id': entry_id,
-                'player_id': player_id
+                'player_cookie': player_cookie
             }
         )
         entry_data = await get_entry_data(
-            player_id, entry_id, app.config
+            player_cookie, entry_id, app.config
         )
         leagues, name = await asyncio.gather(
             get_leagues_entered(entry_data), get_name(entry_data)
