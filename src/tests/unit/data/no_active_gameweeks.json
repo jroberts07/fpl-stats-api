@@ -1,0 +1,16 @@
+[
+    {
+        "id": 1,
+        "deadline_time_epoch": 1565373600,
+        "is_previous": false,
+        "is_current": false,
+        "is_next": false
+    },
+    {
+        "id": 2,
+        "deadline_time_epoch": 1566037800,
+        "is_previous": false,
+        "is_current": false,
+        "is_next": false
+    }
+]

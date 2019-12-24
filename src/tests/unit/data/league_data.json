@@ -1,0 +1,17 @@
+{
+    "league_id": "123",
+    "league_name": "League A",
+    "start_time": null,
+    "end_time": null,
+    "standings": [
+        {
+            "entry_id": "100",
+            "player_name": "Player A",
+            "entry_name": "Team A",
+            "live_points": 0,
+            "total_points": 390,
+            "confirmed_rank": 1,
+            "live_rank": 0
+        }
+    ]
+}

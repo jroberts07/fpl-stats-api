@@ -1,0 +1,9 @@
+[
+    {
+        "id": 1,
+        "deadline_time": "2019-08-09T18:00:00Z",
+        "is_previous": true,
+        "is_current": true,
+        "is_next": false
+    }
+]

@@ -1,0 +1,26 @@
+{
+    "league": {
+        "id": 123,
+        "name": "League A"
+    },
+    "standings": {
+        "results": [
+            {
+                "entry": 100,
+                "event_total": 10,
+                "player_name": "Player A",
+                "rank_sort": 1,
+                "total": 400,
+                "entry_name": "Team A"
+            },
+            {
+                "entry": 200,
+                "event_total": 20,
+                "player_name": "Player B",
+                "rank_sort": 2,
+                "total": 300,
+                "entry_name": "Team B"
+            }
+        ]
+    }
+}
